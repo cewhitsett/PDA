@@ -35,15 +35,15 @@ def delete_it():
 # Creates a couple entries in the database for testing.
 def create_it():
     db.create_all()
-    #
-    # for i in range(5):
-    #     j = Journal(name=str(i),desc="My {} item".format(i),user=def_user)
-    #
-    #     for k in range(random.randint(0,10)):
-    #         p = Entry(title="Head {}".format(k+1), body="Oh man {}".format(k))
-    #         j.entries.append(p)
-    #     db.session.add(j)
-    # db.session.commit()
+
+    for i in range(5):
+        j = Journal(name=str(i),desc="My {} item".format(i),user=def_user)
+
+        for k in range(random.randint(0,10)):
+            p = Entry(title="Head {}".format(k+1), body="Oh man {}".format(k))
+            j.entries.append(p)
+        db.session.add(j)
+    db.session.commit()
 
 # OIDC to get the user that is logged in
 @app.before_request
@@ -224,7 +224,6 @@ def newjournal():
     db.session.commit()
     return redirect(url_for('.journal', ident=j.id))
 
-@app.route("/newentry")
 @app.route("/newentry/<ident>",methods=["GET","POST"])
 @oidc.require_login
 def newentry(ident):
