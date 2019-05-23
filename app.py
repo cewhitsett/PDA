@@ -214,15 +214,39 @@ def login():
 
 @app.route("/logout")
 def logout():
+    heads = dict(request.headers)
+    if check_csrf(heads): return redirect(url_for(".index"))
     oidc.logout()
     return redirect(url_for(".index"))
 
+
+def check_csrf(heads):
+    if "Origin" not in heads and "Referer" not in heads:
+        print("CSRF attempt!!!")
+        return True
+
+    if "Host" not in heads:
+        print("CSRF attempt!!!")
+        return True
+
+    if "Origin" in heads:
+        attempt = heads["Origin"]
+    else:
+        attempt = heads["Referer"]
+
+    if attempt != heads["Host"]:
+        print("CSRF attempt!!!")
+        return True
 
 @app.route("/newjournal",methods=["GET","POST"])
 @oidc.require_login
 def newjournal():
     if request.method == "GET":
         return render_template("form.html",url="/newjournal",data_type="Journal")
+
+    heads = dict(request.headers)
+    if check_csrf(heads): return redirect(url_for(".index"))
+
     user_id = oidc.user_getfield("sub")
 
     values = request.form
@@ -236,6 +260,9 @@ def newjournal():
 def newentry(ident):
 
     if check_user(ident): return redirect(url_for(".page_not_found"))
+
+    heads = dict(request.headers)
+    if check_csrf(heads): return redirect(url_for(".index"))
 
     if request.method == "GET":
         return render_template("form.html",url="/newentry/"+ident,data_type="Entry")
@@ -251,6 +278,9 @@ def newentry(ident):
 @oidc.require_login
 def deletejournal():
 
+    heads = dict(request.headers)
+    if check_csrf(heads): return redirect(url_for(".index"))
+
     user_id = oidc.user_getfield("sub")
 
     js = Journal.query.filter_by(user=user_id).all()
@@ -264,7 +294,7 @@ def deletejournal():
 
     db.session.commit()
     return redirect(url_for(".index"))
-    
+
 if __name__ == "__main__":
     delete_it()
     create_it()
