@@ -221,6 +221,7 @@ def logout():
 
 
 def check_csrf(heads):
+    # Checks to see if needed headers are availible. If not, throw error
     if "Origin" not in heads and "Referer" not in heads:
         print("CSRF attempt!!!")
         return True
@@ -234,9 +235,12 @@ def check_csrf(heads):
     else:
         attempt = heads["Referer"]
 
+    # If host != origin or referer, error
     if attempt != heads["Host"]:
         print("CSRF attempt!!!")
         return True
+
+    return False
 
 @app.route("/newjournal",methods=["GET","POST"])
 @oidc.require_login
