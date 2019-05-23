@@ -1,20 +1,38 @@
 {% extends "layout.html" %}
 {% block title %}Journals{% endblock %}
 {% block body %}
-<h1>{{ head }}</h1>
+<h1>Journals</h1>
+<h5>All of your journals</h5>
 {% if ls %}
 <table class="table">
-  {% for l in ls %}
+  <thead>
+    <th scope="col">#</th>
+    <th scope="col">Name</th>
+    <th scope="col">Description</th>
+    <th scope="col">Entries</th>
+  </thead>
+  <tbody>
+  {% for i in range(ls|length) %}
   <tr>
+      <th scope="row">
+        {{i+1}}
+      </th>
       <td>
-        <a href="/journal/{{l.link}}">{{l.name}}</a>
+        <a href="/journal/{{ls[i].link}}">{{ls[i].name}}</a>
       </td>
       <td>
-        {{l.desc}}
+        {{ls[i].desc}}
+      </td>
+      <td>
+        {{ls[i].entries|length}}
       </td>
   </tr>
   {% endfor %}
+  </tbody>
 </table>
+
 {% endif %}
-<a href="/newjournal">Add a journal</a>
+<div class="a-cont">
+  <a class="btn btn-primary" role="button" href="/newjournal">Add a journal</a>
+</div>
 {% endblock %}

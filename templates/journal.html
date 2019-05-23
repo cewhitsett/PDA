@@ -2,16 +2,28 @@
 {% block title %}Journal{% endblock %}
 {% block body %}
 <h1>{{ j.name }}</h1>
-<h3>{{ j.desc }}</h3>
+<h5>{{ j.desc }}</h5>
 {% if es %}
 <table class="table">
-  {% for e in es %}
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Name</th>
+      <th scope="col">Date</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for i in range(es|length) %}
   <tr>
-    <td><a href="/entry/{{e.link}}">{{e.title}}</a></td>
-    <td>{{e.date}}</td>
+    <th scope="row">{{i+1}}</th>
+    <td><a href="/entry/{{es[i].link}}">{{es[i].title}}</a></td>
+    <td>{{es[i].date}}</td>
   </tr>
   {% endfor %}
+  </tbody>
 </table>
 {% endif %}
-<a href="/newentry/{{j.id}}">Add an entry</a>
+<div class="a-cont">
+  <a  class="btn btn-primary" role="button" href="/newentry/{{j.id}}">Add an entry</a>
+</div>
 {% endblock %}

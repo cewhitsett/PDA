@@ -2,10 +2,12 @@
 {% block title %}Journals{% endblock %}
 {% block body %}
 <h1>{{entry.title}}</h1>
-<h3>{{entry.date}}</h3>
+<h5>{{entry.date}}</h5>
 
 <p>
   {{entry.body}}
 </p>
-<a href="/journal/{{entry.jid}}">Back to Journal</a>
+<div class="a-cont">
+<a  class="btn btn-primary" role="button" href="/journal/{{entry.jid}}">Back to Journal</a>
+<div>
 {% endblock %}

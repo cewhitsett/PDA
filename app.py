@@ -55,6 +55,7 @@ def before_request():
 
 # Catch 404 errors
 @app.errorhandler(404)
+@app.errorhandler(405)
 def pnf(e):
     return redirect(url_for(".page_not_found"))
 
@@ -85,7 +86,7 @@ class Entry(db.Model):
                            nullable=False)
 
     journal    = db.relationship("Journal",
-                    backref=db.backref("entries",lazy=True))
+                    backref=db.backref("entries",cascade="all, delete-orphan", lazy=True))
 
 
 # Following is a ton of different getters for journals and entries. Basically,
@@ -99,7 +100,13 @@ def get_journals(user_id):
     return journals
 
 def get_journal_obj(js):
-    obj = [{"link":j.id, "name":j.name, "desc":j.desc} for j in js]
+    obj = [
+        {
+            "link":j.id, "name":j.name,
+            "desc":j.desc,"entries":j.entries
+        }
+        for j in js
+    ]
     return obj
 
 def get_entries(journal_id):
@@ -112,7 +119,7 @@ def get_entries_obj(es):
         data = {
             "title": entry.title,
             "body":  entry.body,
-            "date":  entry.date.strftime("%B %d, %Y at %-I:%M %p"),
+            "date":  entry.date.strftime("Created %B %d, %Y at %-I:%M %p"),
             "link":  entry.id
         }
         obj.append(data)
@@ -128,7 +135,7 @@ def get_entry_obj(entry_id):
     obj = {
         "title": entry.title,
         "body":  entry.body,
-        "date":  entry.date.strftime("%B %d, %Y at %-I:%M %p"),
+        "date":  entry.date.strftime("Created %B %d, %Y at %-I:%M %p"),
         "link":  entry.id,
         "jid":   entry.journal_id
     }
@@ -203,7 +210,7 @@ def entry(ident):
 @app.route("/login")
 @oidc.require_login
 def login():
-    return redirect(url_for(".dashboard"))
+    return redirect(url_for(".journals"))
 
 @app.route("/logout")
 def logout():
@@ -240,5 +247,25 @@ def newentry(ident):
     db.session.commit()
     return redirect(url_for('.entry', ident=e.id))
 
+@app.route("/deletejournal",methods=["POST"])
+@oidc.require_login
+def deletejournal():
+
+    user_id = oidc.user_getfield("sub")
+
+    js = Journal.query.filter_by(user=user_id).all()
+
+    for j in js:
+        j.entries.clear()
+        db.session.add(j)
+    db.session.commit()
+
+    Journal.query.filter_by(user=user_id).delete()
+
+    db.session.commit()
+    return redirect(url_for(".index"))
+    
 if __name__ == "__main__":
+    delete_it()
+    create_it()
     app.run(debug=True)
