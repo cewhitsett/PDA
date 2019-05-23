@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% block title %}Journal{% endblock %}
+{% block body %}
+<h1>{{ j.name }}</h1>
+<h3>{{ j.desc }}</h3>
+{% if es %}
+<table class="table">
+  {% for e in es %}
+  <tr>
+    <td><a href="/entry/{{e.link}}">{{e.title}}</a></td>
+    <td>{{e.date}}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endif %}
+<a href="/newentry/{{j.id}}">Add an entry</a>
+{% endblock %}

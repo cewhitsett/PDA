@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+{% block title %}New {{ data_type }}{% endblock %}
+{% block body %}
+<h1>Add a {{ data_type }}</h1>
+
+<form action="{{url}}" method="post">
+  <label for="title">Title of new {{ data_type.lower() }}</label>
+  <div class="form-group mb-3">
+    <input type="text" class="form-control" name="title" id="title" placeholder="Title">
+  </div>
+  <label for="body_text">
+    {% if data_type == "Journal" %}
+    Description
+    {% else %}
+    Entry Body
+    {% endif %}
+  </label>
+
+  <div class="form-group">
+    <textarea class="form-control" aria-label="With textarea"
+    {% if data_type == "Journal" %}
+    maxlength="280" placeholder="Enter a brief description" rows="3"
+    {% else %}
+    placeholder="Enter body of entry" rows="6"
+    {% endif %}
+    name="body_text" id="body_text"></textarea>
+  </div>
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+{% endblock %}

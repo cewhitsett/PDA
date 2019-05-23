@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+{% block title %}Journals{% endblock %}
+{% block body %}
+<h1>{{entry.title}}</h1>
+<h3>{{entry.date}}</h3>
+
+<p>
+  {{entry.body}}
+</p>
+<a href="/journal/{{entry.jid}}">Back to Journal</a>
+{% endblock %}
